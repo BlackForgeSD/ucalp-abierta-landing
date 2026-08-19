@@ -1,8 +1,80 @@
+import { useState } from 'react'
 import Reveal from '../components/Reveal'
 
 const fieldClass = 'mt-2 w-full rounded-2xl border border-white/20 bg-white/[0.09] px-4 py-3.5 text-sm text-white outline-none transition placeholder:text-white/60 focus:border-brand-lime focus:bg-white/[0.13] focus:ring-4 focus:ring-brand-lime/10'
 
+const formspreeEndpoint = import.meta.env.VITE_FORMSPREE_ENDPOINT?.trim()
+
+const statusMessages = {
+  idle: 'Completá los campos requeridos y te contactaremos a la brevedad.',
+  submitting: 'Estamos enviando tu consulta…',
+  success: 'Tu consulta fue enviada correctamente. El equipo de Ingreso se va a contactar con vos.',
+  error: 'No pudimos enviar tu consulta. Intentá nuevamente en unos minutos o escribinos por WhatsApp.',
+}
+
+if (import.meta.env.DEV && !formspreeEndpoint) {
+  console.warn('[UCALP Abierta] Falta configurar VITE_FORMSPREE_ENDPOINT. El formulario permanecerá deshabilitado.')
+}
+
 export default function ContactPlaceholder() {
+  const [status, setStatus] = useState('idle')
+  const isSubmitting = status === 'submitting'
+  const isConfigured = Boolean(formspreeEndpoint)
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+
+    if (!formspreeEndpoint || isSubmitting) return
+
+    const form = event.currentTarget
+    const formData = new FormData(form)
+    const payload = {
+      nombre_apellido: formData.get('nombre_apellido')?.toString().trim(),
+      email: formData.get('email')?.toString().trim(),
+      whatsapp: formData.get('whatsapp')?.toString().trim(),
+      propuesta_interes: formData.get('propuesta_interes')?.toString(),
+      mensaje: formData.get('mensaje')?.toString().trim(),
+      origen: 'UCALP Abierta - Landing',
+      fecha_envio: new Date().toISOString(),
+      user_agent: navigator.userAgent,
+    }
+
+    setStatus('submitting')
+
+    try {
+      const response = await fetch(formspreeEndpoint, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      })
+
+      if (!response.ok) throw new Error(`Formspree respondió con estado ${response.status}`)
+
+      form.reset()
+      setStatus('success')
+    } catch (error) {
+      console.error('[UCALP Abierta] No se pudo enviar el formulario.', error)
+      setStatus('error')
+    }
+  }
+
+  const statusText = isConfigured
+    ? statusMessages[status]
+    : import.meta.env.DEV
+      ? 'El formulario está deshabilitado. Agregá VITE_FORMSPREE_ENDPOINT para habilitar el envío.'
+      : 'El formulario no está disponible en este momento. Intentá nuevamente más tarde.'
+
+  const statusClass = status === 'success'
+    ? 'text-brand-lime'
+    : status === 'error'
+      ? 'text-red-200'
+      : !isConfigured
+        ? 'text-amber-200'
+        : 'text-white/75'
+
   return (
     <section id="contacto" className="section-space relative overflow-hidden bg-brand-cream">
       <div className="absolute -right-32 bottom-10 h-80 w-80 rounded-full bg-brand-green/10 blur-3xl" />
@@ -53,51 +125,58 @@ export default function ContactPlaceholder() {
                     <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-lime">Formulario de interés</p>
                     <h3 className="mt-2 text-2xl font-bold tracking-[-0.03em] text-white">Contanos sobre vos</h3>
                   </div>
-                  <span className="relative rounded-full border border-white/15 bg-white/10 px-3 py-2 text-[0.65rem] font-bold uppercase tracking-wider text-white/70">Vista previa</span>
+                  <span className="relative rounded-full border border-white/15 bg-white/10 px-3 py-2 text-[0.65rem] font-bold uppercase tracking-wider text-white/70">
+                    {isConfigured ? 'Inscripción abierta' : 'Próximamente'}
+                  </span>
                 </div>
 
-                {/* Integración pendiente: en una etapa posterior este formulario se conectará con Formspree. */}
-                <form onSubmit={(event) => event.preventDefault()} aria-describedby="form-status">
+                <form onSubmit={handleSubmit} aria-describedby="form-status" aria-busy={isSubmitting}>
                   <div className="grid gap-5 sm:grid-cols-2">
-                    <label className="text-xs font-bold text-white">
-                      Nombre y apellido
-                      <input type="text" name="name" placeholder="Tu nombre completo" className={fieldClass} />
-                    </label>
-                    <label className="text-xs font-bold text-white">
-                      Email
-                      <input type="email" name="email" placeholder="nombre@ejemplo.com" className={fieldClass} />
-                    </label>
-                    <label className="text-xs font-bold text-white">
-                      WhatsApp
-                      <input type="tel" name="whatsapp" placeholder="Código de área + número" className={fieldClass} />
-                    </label>
-                    <label className="text-xs font-bold text-white">
-                      Propuesta de interés
-                      <select name="interest" defaultValue="" className={`${fieldClass} appearance-none`}>
+                    <div>
+                      <label htmlFor="nombre_apellido" className="text-xs font-bold text-white">Nombre y apellido</label>
+                      <input id="nombre_apellido" type="text" name="nombre_apellido" autoComplete="name" required placeholder="Tu nombre completo" className={fieldClass} />
+                    </div>
+                    <div>
+                      <label htmlFor="email" className="text-xs font-bold text-white">Email</label>
+                      <input id="email" type="email" name="email" autoComplete="email" required placeholder="nombre@ejemplo.com" className={fieldClass} />
+                    </div>
+                    <div>
+                      <label htmlFor="whatsapp" className="text-xs font-bold text-white">WhatsApp</label>
+                      <input id="whatsapp" type="tel" name="whatsapp" autoComplete="tel" inputMode="tel" required placeholder="Código de área + número" className={fieldClass} />
+                    </div>
+                    <div>
+                      <label htmlFor="propuesta_interes" className="text-xs font-bold text-white">Propuesta de interés</label>
+                      <select id="propuesta_interes" name="propuesta_interes" defaultValue="" required className={`${fieldClass} appearance-none`}>
                         <option value="" disabled className="text-brand-ink">Seleccioná una opción</option>
-                        <option className="text-brand-ink">Aulas Abiertas</option>
-                        <option className="text-brand-ink">Jornada de Orientación Vocacional</option>
-                        <option className="text-brand-ink">Ambas propuestas</option>
-                        <option className="text-brand-ink">No estoy seguro/a, quiero orientación</option>
+                        <option value="Aulas Abiertas" className="text-brand-ink">Aulas Abiertas</option>
+                        <option value="Jornada de Orientación Vocacional" className="text-brand-ink">Jornada de Orientación Vocacional</option>
+                        <option value="Ambas propuestas" className="text-brand-ink">Ambas propuestas</option>
+                        <option value="No estoy seguro/a, quiero orientación" className="text-brand-ink">No estoy seguro/a, quiero orientación</option>
                       </select>
-                    </label>
+                    </div>
                   </div>
 
-                  <label className="mt-5 block text-xs font-bold text-white">
-                    Mensaje
-                    <textarea name="message" rows="4" placeholder="¿Hay algo más que quieras contarnos?" className={`${fieldClass} resize-none`} />
-                  </label>
+                  <div className="mt-5">
+                    <label htmlFor="mensaje" className="block text-xs font-bold text-white">Mensaje <span className="font-medium text-white/60">(opcional)</span></label>
+                    <textarea id="mensaje" name="mensaje" rows="4" placeholder="¿Hay algo más que quieras contarnos?" className={`${fieldClass} resize-none`} />
+                  </div>
 
                   <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <p id="form-status" className="max-w-xs text-xs leading-5 text-white/50">
-                      El envío todavía no está habilitado en esta versión beta.
+                    <p
+                      id="form-status"
+                      role={status === 'error' ? 'alert' : 'status'}
+                      aria-live="polite"
+                      className={`max-w-sm text-xs font-medium leading-5 ${statusClass}`}
+                    >
+                      {statusText}
                     </p>
                     <button
                       type="submit"
-                      disabled
-                      className="inline-flex min-h-12 cursor-not-allowed items-center justify-center gap-3 rounded-full bg-brand-green/55 px-7 py-3 text-sm font-bold text-white"
+                      disabled={!isConfigured || isSubmitting}
+                      className="inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-brand-green px-7 py-3 text-sm font-bold text-brand-deep transition hover:bg-brand-lime focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-lime disabled:cursor-not-allowed disabled:bg-brand-green/45 disabled:text-white/60"
                     >
-                      Enviar consulta <span aria-hidden="true">→</span>
+                      {isSubmitting ? 'Enviando...' : 'Enviar consulta'}
+                      {!isSubmitting && <span aria-hidden="true">→</span>}
                     </button>
                   </div>
                 </form>

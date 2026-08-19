@@ -17,7 +17,7 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['Avenir Next', 'Avenir', 'Montserrat', 'Nunito Sans', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ['Montserrat', 'Arial', 'sans-serif'],
       },
       boxShadow: {
         card: '0 24px 70px -40px rgba(16, 43, 87, 0.38)',

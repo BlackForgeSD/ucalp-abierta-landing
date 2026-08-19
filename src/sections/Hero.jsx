@@ -2,6 +2,18 @@ import ButtonLink from '../components/ButtonLink'
 import Reveal from '../components/Reveal'
 import ovHorizontal from '../../assets/oV-sinFondo-10.png'
 
+const whatsappNumber = (import.meta.env.VITE_WHATSAPP_NUMBER || '').replace(/\D/g, '')
+const whatsappMessage = `Hola, quiero recibir información sobre UCALP Abierta.
+
+Estoy interesado/a en:
+- Aulas Abiertas
+- Jornada de Orientación Vocacional
+
+Necesito más información sobre inscripción, fechas y modalidad.`
+const whatsappHref = whatsappNumber
+  ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`
+  : '#contacto'
+
 function EventTicket({ type, date, endDate, title, note, className = '' }) {
   const isOrientation = type === 'orientation'
 
@@ -85,8 +97,16 @@ export default function Hero() {
 
           <Reveal delay={220} className="mt-8 flex flex-col gap-3 sm:flex-row">
             <ButtonLink href="#contacto" variant="primary" className="sm:min-w-48">Quiero participar</ButtonLink>
-            {/* El enlace institucional de WhatsApp se incorporará cuando se defina el número de la campaña. */}
-            <ButtonLink href="#contacto" variant="light" arrow={false} className="sm:min-w-52">
+            <ButtonLink
+              href={whatsappHref}
+              variant="light"
+              arrow={false}
+              className="sm:min-w-52"
+              target={whatsappNumber ? '_blank' : undefined}
+              rel={whatsappNumber ? 'noopener noreferrer' : undefined}
+              aria-label={whatsappNumber ? 'Consultar por WhatsApp, abre en una pestaña nueva' : 'WhatsApp no configurado, ir al formulario de contacto'}
+              title={whatsappNumber ? undefined : 'WhatsApp temporalmente no disponible; completá el formulario'}
+            >
               <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden="true">
                 <path d="M20 11.6a8 8 0 0 1-11.8 7L4 20l1.4-4A8 8 0 1 1 20 11.6Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
                 <path d="M9.2 8.4c.2-.5.4-.5.7-.5h.4c.2 0 .3 0 .5.4l.7 1.7c.1.3 0 .5-.1.7l-.6.7c-.2.2-.1.4 0 .6.7 1.2 1.7 2.1 3 2.7.2.1.4.1.6-.1l.8-1c.2-.2.4-.3.7-.2l1.7.8c.3.1.5.3.5.5-.1.8-.4 1.5-1 2-.6.5-1.4.7-2.2.5-1.2-.3-2.7-.8-4.4-2.3-1.4-1.2-2.4-2.8-2.7-3.9-.4-1.2 0-2 .4-2.6Z" fill="currentColor" />
@@ -118,7 +138,7 @@ export default function Hero() {
             date="08"
             title="Jornada de Orientación Vocacional"
             note="Primero, explorá"
-            className="absolute right-0 bottom-44 z-20 w-[22.5rem] -rotate-1 animate-float"
+            className="absolute right-0 bottom-44 z-20 w-[22.5rem] -rotate-1"
           />
           <EventTicket
             type="classrooms"
@@ -126,7 +146,7 @@ export default function Hero() {
             endDate="2 oct."
             title="Aulas Abiertas"
             note="Después, vivilo"
-            className="absolute bottom-3 left-6 z-20 w-[22.5rem] rotate-1 animate-drift"
+            className="absolute bottom-3 left-6 z-20 w-[22.5rem] rotate-1"
           />
           <span className="absolute left-10 top-4 h-4 w-4 rounded-full bg-brand-lime animate-pulseSoft" />
           <span className="absolute bottom-5 right-44 h-3 w-3 rounded-full bg-brand-sky animate-pulseSoft [animation-delay:700ms]" />
