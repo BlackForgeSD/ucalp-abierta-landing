@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import Logo from './Logo'
+import { getWhatsAppHref, isWhatsAppConfigured } from '../utils/whatsapp'
 
 const navItems = [
   { href: '#inicio', label: 'Inicio' },
@@ -59,6 +60,16 @@ export default function Navbar() {
 
             <div className="ml-auto flex items-center gap-2 pl-4">
               <a
+                href={getWhatsAppHref()}
+                target={isWhatsAppConfigured ? '_blank' : undefined}
+                rel={isWhatsAppConfigured ? 'noopener noreferrer' : undefined}
+                aria-label={isWhatsAppConfigured ? 'Consultar por WhatsApp, abre en una pestaña nueva' : 'WhatsApp no configurado, ir al formulario de contacto'}
+                title={isWhatsAppConfigured ? undefined : 'WhatsApp temporalmente no disponible; completá el formulario'}
+                className="hidden whitespace-nowrap rounded-full border border-white/25 px-4 py-3 text-xs font-bold text-white/85 transition hover:border-white/40 hover:bg-white/10 hover:text-white lg:inline-flex"
+              >
+                WhatsApp
+              </a>
+              <a
                 href="#contacto"
                 className="hidden whitespace-nowrap rounded-full bg-brand-green px-5 py-3 text-xs font-bold text-white transition hover:bg-[#54a225] sm:inline-flex lg:text-sm"
               >
@@ -96,6 +107,18 @@ export default function Navbar() {
                 <span aria-hidden="true">↗</span>
               </a>
             ))}
+            <a
+              href={getWhatsAppHref()}
+              target={isWhatsAppConfigured ? '_blank' : undefined}
+              rel={isWhatsAppConfigured ? 'noopener noreferrer' : undefined}
+              onClick={() => setMenuOpen(false)}
+              aria-label={isWhatsAppConfigured ? 'Consultar por WhatsApp, abre en una pestaña nueva' : 'WhatsApp no configurado, ir al formulario de contacto'}
+              title={isWhatsAppConfigured ? undefined : 'WhatsApp temporalmente no disponible; completá el formulario'}
+              className="mt-2 flex items-center justify-between rounded-2xl border border-white/15 bg-white/[0.06] px-4 py-3 text-sm font-bold text-white transition hover:border-white/30 hover:bg-white/10"
+            >
+              Consultar por WhatsApp
+              <span aria-hidden="true">↗</span>
+            </a>
           </div>
         </nav>
       </div>

@@ -1,18 +1,7 @@
 import ButtonLink from '../components/ButtonLink'
 import Reveal from '../components/Reveal'
 import ovHorizontal from '../../assets/oV-sinFondo-10.png'
-
-const whatsappNumber = (import.meta.env.VITE_WHATSAPP_NUMBER || '').replace(/\D/g, '')
-const whatsappMessage = `Hola, quiero recibir información sobre UCALP Abierta.
-
-Estoy interesado/a en:
-- Aulas Abiertas
-- Jornada de Orientación Vocacional
-
-Necesito más información sobre inscripción, fechas y modalidad.`
-const whatsappHref = whatsappNumber
-  ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`
-  : '#contacto'
+import { getWhatsAppHref, isWhatsAppConfigured } from '../utils/whatsapp'
 
 function EventTicket({ type, date, endDate, title, note, className = '' }) {
   const isOrientation = type === 'orientation'
@@ -98,14 +87,14 @@ export default function Hero() {
           <Reveal delay={220} className="mt-8 flex flex-col gap-3 sm:flex-row">
             <ButtonLink href="#contacto" variant="primary" className="sm:min-w-48">Quiero participar</ButtonLink>
             <ButtonLink
-              href={whatsappHref}
+              href={getWhatsAppHref()}
               variant="light"
               arrow={false}
               className="sm:min-w-52"
-              target={whatsappNumber ? '_blank' : undefined}
-              rel={whatsappNumber ? 'noopener noreferrer' : undefined}
-              aria-label={whatsappNumber ? 'Consultar por WhatsApp, abre en una pestaña nueva' : 'WhatsApp no configurado, ir al formulario de contacto'}
-              title={whatsappNumber ? undefined : 'WhatsApp temporalmente no disponible; completá el formulario'}
+              target={isWhatsAppConfigured ? '_blank' : undefined}
+              rel={isWhatsAppConfigured ? 'noopener noreferrer' : undefined}
+              aria-label={isWhatsAppConfigured ? 'Consultar por WhatsApp, abre en una pestaña nueva' : 'WhatsApp no configurado, ir al formulario de contacto'}
+              title={isWhatsAppConfigured ? undefined : 'WhatsApp temporalmente no disponible; completá el formulario'}
             >
               <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden="true">
                 <path d="M20 11.6a8 8 0 0 1-11.8 7L4 20l1.4-4A8 8 0 1 1 20 11.6Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />

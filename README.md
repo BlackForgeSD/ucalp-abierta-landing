@@ -35,5 +35,5 @@ npm run preview
 - Navegación animada, indicador lateral de sección y animaciones sutiles.
 - Diseño responsive para mobile, tablet y desktop.
 - Formulario funcional mediante Formspree, sin backend propio.
-- CTA de WhatsApp configurable; si falta el número, dirige al formulario.
+- CTAs de WhatsApp configurables en navbar, hero y formulario; si falta el número, dirigen al formulario.
 - Sin configuración de deploy ni credenciales incluidas en el repositorio.

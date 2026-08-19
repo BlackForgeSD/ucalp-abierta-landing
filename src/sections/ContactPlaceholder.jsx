@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Reveal from '../components/Reveal'
+import { getWhatsAppHref, isWhatsAppConfigured } from '../utils/whatsapp'
 
 const fieldClass = 'mt-2 w-full rounded-2xl border border-white/20 bg-white/[0.09] px-4 py-3.5 text-sm text-white outline-none transition placeholder:text-white/60 focus:border-brand-lime focus:bg-white/[0.13] focus:ring-4 focus:ring-brand-lime/10'
 
@@ -18,6 +19,7 @@ if (import.meta.env.DEV && !formspreeEndpoint) {
 
 export default function ContactPlaceholder() {
   const [status, setStatus] = useState('idle')
+  const [selectedInterest, setSelectedInterest] = useState('')
   const isSubmitting = status === 'submitting'
   const isConfigured = Boolean(formspreeEndpoint)
 
@@ -54,6 +56,7 @@ export default function ContactPlaceholder() {
       if (!response.ok) throw new Error(`Formspree respondió con estado ${response.status}`)
 
       form.reset()
+      setSelectedInterest('')
       setStatus('success')
     } catch (error) {
       console.error('[UCALP Abierta] No se pudo enviar el formulario.', error)
@@ -146,7 +149,14 @@ export default function ContactPlaceholder() {
                     </div>
                     <div>
                       <label htmlFor="propuesta_interes" className="text-xs font-bold text-white">Propuesta de interés</label>
-                      <select id="propuesta_interes" name="propuesta_interes" defaultValue="" required className={`${fieldClass} appearance-none`}>
+                      <select
+                        id="propuesta_interes"
+                        name="propuesta_interes"
+                        value={selectedInterest}
+                        onChange={(event) => setSelectedInterest(event.target.value)}
+                        required
+                        className={`${fieldClass} appearance-none`}
+                      >
                         <option value="" disabled className="text-brand-ink">Seleccioná una opción</option>
                         <option value="Aulas Abiertas" className="text-brand-ink">Aulas Abiertas</option>
                         <option value="Jornada de Orientación Vocacional" className="text-brand-ink">Jornada de Orientación Vocacional</option>
@@ -161,7 +171,7 @@ export default function ContactPlaceholder() {
                     <textarea id="mensaje" name="mensaje" rows="4" placeholder="¿Hay algo más que quieras contarnos?" className={`${fieldClass} resize-none`} />
                   </div>
 
-                  <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="mt-6 flex flex-col gap-4">
                     <p
                       id="form-status"
                       role={status === 'error' ? 'alert' : 'status'}
@@ -170,14 +180,27 @@ export default function ContactPlaceholder() {
                     >
                       {statusText}
                     </p>
-                    <button
-                      type="submit"
-                      disabled={!isConfigured || isSubmitting}
-                      className="inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-brand-green px-7 py-3 text-sm font-bold text-brand-deep transition hover:bg-brand-lime focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-lime disabled:cursor-not-allowed disabled:bg-brand-green/45 disabled:text-white/60"
-                    >
-                      {isSubmitting ? 'Enviando...' : 'Enviar consulta'}
-                      {!isSubmitting && <span aria-hidden="true">→</span>}
-                    </button>
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+                      <button
+                        type="submit"
+                        disabled={!isConfigured || isSubmitting}
+                        className="inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-full bg-brand-green px-7 py-3 text-sm font-bold text-brand-deep transition hover:bg-brand-lime focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-lime disabled:cursor-not-allowed disabled:bg-brand-green/45 disabled:text-white/60 sm:w-auto"
+                      >
+                        {isSubmitting ? 'Enviando...' : 'Enviar consulta'}
+                        {!isSubmitting && <span aria-hidden="true">→</span>}
+                      </button>
+                      <a
+                        href={getWhatsAppHref(selectedInterest)}
+                        target={isWhatsAppConfigured ? '_blank' : undefined}
+                        rel={isWhatsAppConfigured ? 'noopener noreferrer' : undefined}
+                        aria-label={isWhatsAppConfigured ? 'Consultar por WhatsApp, abre en una pestaña nueva' : 'WhatsApp no configurado, permanecer en el formulario de contacto'}
+                        title={isWhatsAppConfigured ? undefined : 'WhatsApp temporalmente no disponible'}
+                        className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-white/25 px-6 py-3 text-sm font-bold text-white transition hover:border-white/45 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-lime sm:w-auto"
+                      >
+                        Consultar por WhatsApp
+                        <span aria-hidden="true">↗</span>
+                      </a>
+                    </div>
                   </div>
                 </form>
               </div>
