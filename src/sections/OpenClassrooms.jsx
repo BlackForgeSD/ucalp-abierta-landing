@@ -2,36 +2,21 @@ import { useState } from 'react'
 import ButtonLink from '../components/ButtonLink'
 import Reveal from '../components/Reveal'
 import SectionHeading from '../components/SectionHeading'
+import { facultyColors, openClassrooms } from '../data/aulasAbiertas'
 
-const scheduleDays = [
-  { id: 'sep-28', day: '28', month: 'SEP', label: '28 de septiembre' },
-  { id: 'sep-29', day: '29', month: 'SEP', label: '29 de septiembre' },
-  { id: 'sep-30', day: '30', month: 'SEP', label: '30 de septiembre' },
-  { id: 'oct-01', day: '1', month: 'OCT', label: '1 de octubre' },
-  { id: 'oct-02', day: '2', month: 'OCT', label: '2 de octubre' },
+const confirmedScheduleDays = [
+  { id: '2026-09-28', day: '28', month: 'SEP', label: '28 de septiembre' },
+  { id: '2026-09-29', day: '29', month: 'SEP', label: '29 de septiembre' },
+  { id: '2026-09-30', day: '30', month: 'SEP', label: '30 de septiembre' },
+  { id: '2026-10-01', day: '1', month: 'OCT', label: '1 de octubre' },
+  { id: '2026-10-02', day: '2', month: 'OCT', label: '2 de octubre' },
 ]
 
-// Datos conceptuales provistos para construir la interfaz. Reemplazar por el cronograma oficial cuando esté disponible.
-const scheduleItems = [
-  {
-    id: 'sistemas-objetos-2',
-    date: 'sep-28',
-    career: 'Lic. en Sistemas',
-    subject: 'Orientación a Objetos II',
-    time: '18:00 hs',
-    campus: 'La Plata',
-    mode: 'Presencial',
-  },
-  {
-    id: 'economia-macroeconomia',
-    date: 'sep-28',
-    career: 'Lic. en Economía',
-    subject: 'Macroeconomía',
-    time: '08:00 hs',
-    campus: 'La Plata',
-    mode: 'Presencial',
-  },
-]
+const scheduleDays = openClassrooms.some((item) => item.fecha === '-')
+  ? [...confirmedScheduleDays, { id: '-', day: 'A', month: 'CONFIRMAR', label: 'A confirmar', pending: true }]
+  : confirmedScheduleDays
+
+const dateLabels = Object.fromEntries(scheduleDays.map((day) => [day.id, day.label]))
 
 function normalizeSearch(value) {
   return value
@@ -57,16 +42,16 @@ function ScheduleCard() {
   const [selectedDay, setSelectedDay] = useState(scheduleDays[0].id)
   const [search, setSearch] = useState('')
   const normalizedSearch = normalizeSearch(search.trim())
-  const filteredItems = scheduleItems.filter((item) => {
-    if (item.date !== selectedDay) return false
-    if (!normalizedSearch) return true
+  const isGlobalSearch = normalizedSearch.length > 0
+  const filteredItems = openClassrooms.filter((item) => {
+    if (!isGlobalSearch) return item.fecha === selectedDay
 
-    return normalizeSearch(`${item.career} ${item.subject} ${item.campus} ${item.mode}`).includes(normalizedSearch)
+    return normalizeSearch(`${item.carrera} ${item.clase}`).includes(normalizedSearch)
   })
   const selectedDayLabel = scheduleDays.find((day) => day.id === selectedDay)?.label
 
   return (
-    <div className="relative flex w-full flex-col overflow-hidden rounded-[2.5rem] border border-white/15 bg-brand-deep p-5 text-white shadow-floating sm:p-7 lg:h-full lg:min-h-0 xl:p-8">
+    <div className="relative flex min-w-0 w-full flex-col overflow-hidden rounded-[2.5rem] border border-white/15 bg-brand-deep p-5 text-white shadow-floating sm:p-7 lg:h-[46rem] lg:min-h-0 xl:p-8">
       <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-brand-green/30 blur-sm" />
 
       <div className="relative flex flex-none items-start justify-between gap-4 border-b border-white/15 pb-5">
@@ -77,7 +62,7 @@ function ScheduleCard() {
         <div className="grid h-12 w-12 flex-none place-items-center rounded-2xl bg-brand-green text-lg font-extrabold sm:h-14 sm:w-14 sm:text-xl">’27</div>
       </div>
 
-      <div className="relative mt-5 flex flex-none gap-2 overflow-x-auto pb-2" aria-label="Seleccionar fecha del cronograma">
+      <div className="relative mt-5 flex w-full min-w-0 max-w-full flex-none gap-2 overflow-x-auto pb-2 [scrollbar-color:rgba(255,255,255,0.22)_transparent] [scrollbar-width:thin]" aria-label="Seleccionar fecha del cronograma">
         {scheduleDays.map((day) => {
           const isSelected = selectedDay === day.id
 
@@ -88,14 +73,14 @@ function ScheduleCard() {
               aria-pressed={isSelected}
               aria-label={day.label}
               onClick={() => setSelectedDay(day.id)}
-              className={`min-w-[4.15rem] flex-1 rounded-2xl border px-3 py-2.5 text-center transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-lime ${
+              className={`min-w-[4.15rem] flex-1 rounded-2xl border px-2.5 py-2.5 text-center transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-lime ${
                 isSelected
                   ? 'border-brand-lime bg-brand-lime text-brand-deep'
                   : 'border-white/15 bg-white/[0.07] text-white hover:border-white/30 hover:bg-white/10'
               }`}
             >
-              <span className="block text-lg font-extrabold leading-none">{day.day}</span>
-              <span className={`mt-1 block text-[0.56rem] font-bold tracking-[0.14em] ${isSelected ? 'text-brand-deep/70' : 'text-white/55'}`}>{day.month}</span>
+              <span className={`block font-extrabold leading-none ${day.pending ? 'text-sm' : 'text-lg'}`}>{day.day}</span>
+              <span className={`mt-1 block text-[0.5rem] font-bold tracking-[0.08em] ${isSelected ? 'text-brand-deep/70' : 'text-white/55'}`}>{day.month}</span>
             </button>
           )
         })}
@@ -118,37 +103,58 @@ function ScheduleCard() {
       </div>
 
       <div className="relative mt-4 flex min-h-0 flex-1 flex-col">
-        <p className="mb-2 flex-none text-[0.62rem] font-bold uppercase tracking-[0.15em] text-white/45" aria-live="polite">
-          {filteredItems.length} {filteredItems.length === 1 ? 'clase disponible' : 'clases disponibles'} · {selectedDayLabel}
+        <p className="mb-2 flex-none text-[0.62rem] font-bold uppercase tracking-[0.15em] text-white/55" aria-live="polite">
+          {isGlobalSearch
+            ? `${filteredItems.length} ${filteredItems.length === 1 ? 'resultado global' : 'resultados globales'} · Todas las fechas`
+            : `${filteredItems.length} ${filteredItems.length === 1 ? 'clase disponible' : 'clases disponibles'} · ${selectedDayLabel}`}
         </p>
 
-        <div className="min-h-0 flex-1 space-y-2.5 overflow-y-auto overscroll-contain pr-1 lg:max-h-none max-lg:max-h-[30rem]">
+        <div className="min-h-0 flex-1 space-y-2.5 overflow-y-auto overscroll-contain pr-1 [scrollbar-color:rgba(255,255,255,0.22)_transparent] [scrollbar-width:thin] lg:max-h-none max-lg:max-h-[30rem]">
           {filteredItems.length > 0 ? (
-            filteredItems.map((item) => (
-              <article key={item.id} className="rounded-2xl border border-white/10 bg-white/[0.075] p-4 transition hover:border-white/20 hover:bg-white/[0.1]">
+            filteredItems.map((item) => {
+              const facultyColor = facultyColors[item.facultad] ?? '#8BD435'
+
+              return (
+              <article
+                key={item.id}
+                className="rounded-2xl border border-l-4 border-white/10 bg-white/[0.075] p-4 transition hover:border-white/20 hover:bg-white/[0.1]"
+                style={{ borderLeftColor: facultyColor }}
+              >
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="text-[0.62rem] font-bold uppercase tracking-[0.13em] text-brand-lime">{item.career}</p>
-                    <h4 className="mt-1.5 text-base font-bold leading-tight text-white sm:text-lg">{item.subject}</h4>
+                    <p className="flex items-center gap-2 text-[0.62rem] font-bold uppercase tracking-[0.13em] text-white/80">
+                      <span className="h-2 w-2 flex-none rounded-full" style={{ backgroundColor: facultyColor }} />
+                      {item.carrera}
+                    </p>
+                    <h4 className="mt-1.5 text-base font-bold leading-tight text-white sm:text-lg">{item.clase}</h4>
                   </div>
-                  <span className="rounded-full border border-brand-sky/25 bg-brand-sky/10 px-3 py-1.5 text-[0.56rem] font-bold uppercase tracking-[0.12em] text-brand-sky">
-                    {item.mode}
-                  </span>
+                  <div className="flex flex-wrap justify-end gap-2">
+                    {isGlobalSearch && (
+                      <span className="rounded-full border border-brand-lime/30 bg-brand-lime/10 px-3 py-1.5 text-[0.56rem] font-bold uppercase tracking-[0.1em] text-brand-lime">
+                        {dateLabels[item.fecha] ?? 'A confirmar'}
+                      </span>
+                    )}
+                    <span className="rounded-full border border-brand-sky/25 bg-brand-sky/10 px-3 py-1.5 text-[0.56rem] font-bold uppercase tracking-[0.12em] text-brand-sky">
+                      {item.modalidad}
+                    </span>
+                  </div>
                 </div>
-                <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-semibold text-white/60 sm:text-sm">
-                  <span>{item.time}</span>
-                  <span aria-hidden="true">·</span>
-                  <span>{item.campus}</span>
-                </p>
+                <div className="mt-3 grid grid-cols-2 gap-3 text-xs sm:text-sm">
+                  <p><span className="block text-[0.55rem] font-bold uppercase tracking-[0.12em] text-white/40">Hora</span><span className="mt-1 block font-semibold text-white/70">{item.hora}</span></p>
+                  <p><span className="block text-[0.55rem] font-bold uppercase tracking-[0.12em] text-white/40">Sede</span><span className="mt-1 block font-semibold text-white/70">{item.sede}</span></p>
+                </div>
               </article>
-            ))
+              )
+            })
           ) : (
             <div className="grid min-h-44 place-items-center rounded-2xl border border-dashed border-white/20 bg-white/[0.045] p-6 text-center">
               <div>
-                <p className="text-sm font-bold text-white">No encontramos clases para esta selección.</p>
-                <p className="mx-auto mt-2 max-w-sm text-xs leading-5 text-white/55">
-                  Probá otra fecha o modificá la búsqueda. El cronograma se actualizará a medida que se confirmen nuevas clases.
+                <p className="text-sm font-bold text-white">
+                  {isGlobalSearch ? 'No encontramos actividades para esa búsqueda.' : 'No hay actividades confirmadas para esta fecha.'}
                 </p>
+                {!isGlobalSearch && (
+                  <p className="mx-auto mt-2 max-w-sm text-xs leading-5 text-white/55">Probá otra fecha para consultar el cronograma.</p>
+                )}
               </div>
             </div>
           )}
@@ -192,7 +198,7 @@ export default function OpenClassrooms() {
           </div>
         </Reveal>
 
-        <Reveal delay={120} className="flex min-h-0 lg:pt-[4.25rem]">
+        <Reveal delay={120} className="flex min-h-0 min-w-0 lg:pt-[4.25rem]">
           <ScheduleCard />
         </Reveal>
       </div>
