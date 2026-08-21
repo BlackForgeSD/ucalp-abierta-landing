@@ -9,12 +9,58 @@ export const facultyColors = {
 }
 
 // Fuente: assets/Charlas-v20-08.xlsx. Los campos ausentes se conservan como "-".
-// Colección de charlas abiertas a la comunidad universitaria y público en general, 
-// organizadas por la UNLP. Se incluyen detalles como sede, facultad, carrera, clase, fecha, hora 
-// y modalidad (presencial o virtual).
+// Las direcciones omiten el número de aula y los enlaces de Meet solo se agregan
+// cuando la actividad es virtual y la planilla incluye una URL válida.
+const activityDetails = {
+  1: { direccion: '5 e/ 47 y 48' },
+  2: { direccion: '5 e/ 47 y 48' },
+  3: { direccion: '5 e/ 47 y 48' },
+  4: { direccion: '5 e/ 47 y 48' },
+  5: { direccion: '-' },
+  6: { direccion: '-' },
+  7: { direccion: '-' },
+  8: { direccion: '-' },
+  9: { direccion: '-' },
+  10: { direccion: '-' },
+  11: { direccion: '-' },
+  12: { direccion: '-' },
+  13: { direccion: '-' },
+  14: { direccion: '-' },
+  15: { direccion: '44 Nro. 720 entre 9 y 10' },
+  16: { direccion: '44 Nro. 720 entre 9 y 10' },
+  17: { direccion: 'Virtual', meetUrl: 'https://meet.google.com/vsz-nqqx-aug' },
+  18: { direccion: 'Av. 25 entre 47 y 48 - 1er piso' },
+  19: { direccion: 'Av. 25 entre 47 y 48 - 1er piso' },
+  20: { direccion: 'Av. 25 entre 47 y 48 - 1er piso' },
+  21: { direccion: 'Av. 25 entre 47 y 48 - 1er piso' },
+  22: { direccion: 'Av. 25 entre 47 y 48 - 1er piso' },
+  23: { direccion: 'Av. 25 entre 47 y 48 - 1er piso' },
+  24: { direccion: 'Av. 25 entre 47 y 48 - 1er piso' },
+  25: { direccion: 'Virtual', meetUrl: 'https://meet.google.com/mpu-fyvi-jhz' },
+  26: { direccion: 'Diag. 73 entre 16 y 17' },
+  27: { direccion: 'Diag. 73 entre 16 y 17' },
+  28: { direccion: 'Diag. 73 entre 16 y 17' },
+  29: { direccion: 'Diag. 73 entre 16 y 17' },
+  30: { direccion: '-' },
+  31: { direccion: '-' },
+  32: { direccion: 'Calle 57 entre 13 y 14' },
+  33: { direccion: 'Bonifacini 2067' },
+  34: { direccion: '58 entre 13 y 14, Colegio Estrada' },
+  35: { direccion: '57 Nro. 936' },
+  36: { direccion: '57 Nro. 936' },
+  37: { direccion: '57 Nro. 936' },
+  38: { direccion: 'Diag. 73 N.° 2137 entre 16 y 17' },
+  39: { direccion: 'Diag. 73 N.° 2137 entre 16 y 17' },
+  40: { direccion: 'Diag. 73 N.° 2137 entre 16 y 17' },
+  41: { direccion: 'Diag. 73 N.° 2137 entre 16 y 17' },
+  42: { direccion: 'Virtual', meetUrl: 'https://meet.google.com/fdn-drhs-djj' },
+  43: { direccion: 'Virtual', meetUrl: 'https://meet.google.com/ghw-kjjy-gpa?authuser=1&hs=122' },
+  44: { direccion: 'Virtual', meetUrl: 'https://meet.google.com/gru-sjgv-pyw' },
+  45: { direccion: 'Virtual', meetUrl: 'https://meet.google.com/ggq-twao-bqc?authuser=1&hs=122' },
+  46: { direccion: 'Campo de Deportes UCALP, calle 64 y 147, Los Hornos' },
+}
 
-
-export const openClassrooms = [
+const scheduleRows = [
   {
     id: 1,
     sede: 'La Plata',
@@ -476,3 +522,8 @@ export const openClassrooms = [
     modalidad: 'PRESENCIAL',
   },
 ]
+
+export const openClassrooms = scheduleRows.map((item) => ({
+  ...item,
+  ...(activityDetails[item.id] ?? { direccion: '-' }),
+}))

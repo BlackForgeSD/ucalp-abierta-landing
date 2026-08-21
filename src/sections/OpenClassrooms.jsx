@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import ButtonLink from '../components/ButtonLink'
 import Reveal from '../components/Reveal'
 import SectionHeading from '../components/SectionHeading'
 import { facultyColors, openClassrooms } from '../data/aulasAbiertas'
+import { getWhatsAppHrefForMessage, isWhatsAppConfigured } from '../utils/whatsapp'
 
 const confirmedScheduleDays = [
   { id: '2026-09-28', day: '28', month: 'SEP', label: '28 de septiembre' },
@@ -17,6 +18,20 @@ const scheduleDays = openClassrooms.some((item) => item.fecha === '-')
   : confirmedScheduleDays
 
 const dateLabels = Object.fromEntries(scheduleDays.map((day) => [day.id, day.label]))
+
+function getActivityDate(item) {
+  return dateLabels[item.fecha] ?? 'A confirmar'
+}
+
+function getActivityInfo(item) {
+  const meetLine = item.meetUrl && item.meetUrl !== '-' ? `\nGoogle Meet: ${item.meetUrl}` : ''
+
+  return `Aulas Abiertas UCALP\n\nCarrera: ${item.carrera}\nClase: ${item.clase}\nFecha: ${getActivityDate(item)}\nHora: ${item.hora}\nSede: ${item.sede}\nDirección: ${item.direccion}\nModalidad: ${item.modalidad}${meetLine}`
+}
+
+function getActivityWhatsAppMessage(item) {
+  return `Hola, quiero recibir información sobre Aulas Abiertas UCALP.\n\nMe interesa esta actividad:\n\nCarrera: ${item.carrera}\nClase: ${item.clase}\nFecha: ${getActivityDate(item)}\nHora: ${item.hora}\nSede: ${item.sede}\n\nGracias.`
+}
 
 function normalizeSearch(value) {
   return value
@@ -41,6 +56,8 @@ function CheckItem({ children }) {
 function ScheduleCard() {
   const [selectedDay, setSelectedDay] = useState(scheduleDays[0].id)
   const [search, setSearch] = useState('')
+  const [copyFeedback, setCopyFeedback] = useState(null)
+  const copyTimer = useRef(null)
   const normalizedSearch = normalizeSearch(search.trim())
   const isGlobalSearch = normalizedSearch.length > 0
   const filteredItems = openClassrooms.filter((item) => {
@@ -49,6 +66,24 @@ function ScheduleCard() {
     return normalizeSearch(`${item.carrera} ${item.clase}`).includes(normalizedSearch)
   })
   const selectedDayLabel = scheduleDays.find((day) => day.id === selectedDay)?.label
+
+  useEffect(() => () => window.clearTimeout(copyTimer.current), [])
+
+  const handleCopy = async (item) => {
+    window.clearTimeout(copyTimer.current)
+
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error('La API del portapapeles no está disponible.')
+
+      await navigator.clipboard.writeText(getActivityInfo(item))
+      setCopyFeedback({ id: item.id, status: 'success' })
+    } catch (error) {
+      console.error('[UCALP Abierta] No se pudo copiar la actividad.', error)
+      setCopyFeedback({ id: item.id, status: 'error' })
+    }
+
+    copyTimer.current = window.setTimeout(() => setCopyFeedback(null), 2000)
+  }
 
   return (
     <div className="relative flex min-w-0 w-full flex-col overflow-hidden rounded-[2.5rem] border border-white/15 bg-brand-deep p-5 text-white shadow-floating sm:p-7 lg:h-[46rem] lg:min-h-0 xl:p-8">
@@ -139,9 +174,58 @@ function ScheduleCard() {
                     </span>
                   </div>
                 </div>
-                <div className="mt-3 grid grid-cols-2 gap-3 text-xs sm:text-sm">
-                  <p><span className="block text-[0.55rem] font-bold uppercase tracking-[0.12em] text-white/40">Hora</span><span className="mt-1 block font-semibold text-white/70">{item.hora}</span></p>
-                  <p><span className="block text-[0.55rem] font-bold uppercase tracking-[0.12em] text-white/40">Sede</span><span className="mt-1 block font-semibold text-white/70">{item.sede}</span></p>
+                <div className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2 text-xs sm:text-sm">
+                  <p>
+                    <span className="block text-[0.55rem] font-bold uppercase tracking-[0.12em] text-white/40">Fecha · Hora</span>
+                    <span className="mt-1 block font-semibold text-white/70">{getActivityDate(item)} · {item.hora}</span>
+                  </p>
+                  <p>
+                    <span className="block text-[0.55rem] font-bold uppercase tracking-[0.12em] text-white/40">Sede</span>
+                    <span className="mt-1 block font-semibold text-white/70">{item.sede}</span>
+                  </p>
+                  <p className="col-span-2">
+                    <span className="block text-[0.55rem] font-bold uppercase tracking-[0.12em] text-white/40">Dirección</span>
+                    <span className="mt-1 block font-semibold text-white/70">{item.direccion}</span>
+                  </p>
+                </div>
+
+                <div className="mt-3 flex flex-wrap gap-2 border-t border-white/10 pt-3 text-[0.67rem] font-bold">
+                  <button
+                    type="button"
+                    onClick={() => handleCopy(item)}
+                    aria-label={`Copiar información de ${item.clase}`}
+                    className="rounded-full border border-white/20 bg-white/[0.07] px-3 py-2 text-white transition hover:border-white/35 hover:bg-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-lime"
+                  >
+                    <span aria-live="polite">
+                      {copyFeedback?.id === item.id && copyFeedback.status === 'success'
+                        ? '✓ Copiado'
+                        : copyFeedback?.id === item.id && copyFeedback.status === 'error'
+                          ? 'No se pudo copiar'
+                          : 'Copiar info'}
+                    </span>
+                  </button>
+
+                  <a
+                    href={getWhatsAppHrefForMessage(getActivityWhatsAppMessage(item))}
+                    target={isWhatsAppConfigured ? '_blank' : undefined}
+                    rel={isWhatsAppConfigured ? 'noopener noreferrer' : undefined}
+                    aria-label={`Consultar por WhatsApp sobre ${item.clase}`}
+                    className="rounded-full border border-brand-sky/30 bg-brand-sky/10 px-3 py-2 text-brand-sky transition hover:border-brand-sky/50 hover:bg-brand-sky/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-lime"
+                  >
+                    Consultar
+                  </a>
+
+                  {item.meetUrl && item.meetUrl !== '-' && (
+                    <a
+                      href={item.meetUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Abrir Google Meet de ${item.clase} en una pestaña nueva`}
+                      className="rounded-full border border-brand-lime/35 bg-brand-lime/10 px-3 py-2 text-brand-lime transition hover:border-brand-lime/55 hover:bg-brand-lime/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-lime"
+                    >
+                      Abrir Google Meet
+                    </a>
+                  )}
                 </div>
               </article>
               )
