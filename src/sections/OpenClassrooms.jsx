@@ -13,9 +13,10 @@ const confirmedScheduleDays = [
   { id: '2026-10-02', day: '2', month: 'OCT', label: '2 de octubre' },
 ]
 
-const scheduleDays = openClassrooms.some((item) => item.fecha === '-')
-  ? [...confirmedScheduleDays, { id: '-', day: 'A', month: 'CONFIRMAR', label: 'A confirmar', pending: true }]
-  : confirmedScheduleDays
+const scheduleDays = [
+  ...confirmedScheduleDays,
+  { id: '-', day: 'A', month: 'CONFIRMAR', label: 'A confirmar', pending: true },
+]
 
 const dateLabels = Object.fromEntries(scheduleDays.map((day) => [day.id, day.label]))
 

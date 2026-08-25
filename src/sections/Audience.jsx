@@ -17,10 +17,10 @@ function AudienceIcon({ type }) {
 }
 
 const audiences = [
-  { number: '01', type: 'student', title: 'Estudiantes secundarios', copy: 'Para empezar a imaginar la etapa universitaria y conocerla desde adentro.', accent: 'bg-brand-green text-white' },
-  { number: '02', type: 'family', title: 'Familias', copy: 'Para acompañar una decisión importante con más información y cercanía.', accent: 'bg-brand-sky text-white' },
-  { number: '03', type: 'choose', title: 'Quienes están eligiendo', copy: 'Para explorar intereses, comparar opciones y resolver dudas antes de decidir.', accent: 'bg-brand-blue text-white' },
-  { number: '04', type: 'university', title: 'Futuros universitarios', copy: 'Para descubrir cómo se estudia y cómo se vive la experiencia UCALP.', accent: 'bg-brand-lime text-brand-deep' },
+  { type: 'student', title: 'Estudiantes secundarios', copy: 'Para empezar a imaginar la etapa universitaria y conocerla desde adentro.', accent: 'bg-brand-green text-white' },
+  { type: 'family', title: 'Familias', copy: 'Para acompañar una decisión importante con más información y cercanía.', accent: 'bg-brand-sky text-white' },
+  { type: 'choose', title: 'Quienes están eligiendo', copy: 'Para explorar intereses, comparar opciones y resolver dudas antes de decidir.', accent: 'bg-brand-blue text-white' },
+  { type: 'university', title: 'Futuros universitarios', copy: 'Para descubrir cómo se estudia y cómo se vive la experiencia UCALP.', accent: 'bg-brand-lime text-brand-deep' },
 ]
 
 export default function Audience() {
@@ -38,14 +38,12 @@ export default function Audience() {
 
         <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {audiences.map((audience, index) => (
-            <Reveal key={audience.number} delay={index * 70} className="h-full">
+            <Reveal key={audience.type} delay={index * 70} className="h-full">
               <article className="group relative flex h-full min-h-[19rem] flex-col overflow-hidden rounded-[2rem] border border-brand-blue/10 bg-white p-6 shadow-card transition duration-300 hover:-translate-y-1 hover:border-brand-green/30 sm:p-7">
-                <span className="absolute -right-2 -top-7 text-[7rem] font-extrabold leading-none tracking-[-0.08em] text-brand-blue/[0.035]">{audience.number}</span>
-                <div className="relative flex items-start justify-between">
+                <div className="relative flex items-start">
                   <span className={`grid h-16 w-16 place-items-center rounded-[1.35rem] shadow-soft transition duration-300 group-hover:-rotate-3 group-hover:scale-105 ${audience.accent}`}>
                     <AudienceIcon type={audience.type} />
                   </span>
-                  <span className="text-xs font-bold tracking-[0.18em] text-brand-blue/40">{audience.number}</span>
                 </div>
                 <div className="relative mt-auto pt-12">
                   <div className="mb-5 h-px w-full bg-brand-blue/10"><span className="block h-px w-10 bg-brand-green" /></div>

@@ -8,7 +8,7 @@ export const facultyColors = {
   'Ciencias de la Salud': '#B5195C',
 }
 
-// Fuente: assets/Charlas-v20-08.xlsx. Los campos ausentes se conservan como "-".
+// Fuente: assets/Charlas-v25-08.xlsx. Los campos ausentes se conservan como "-".
 // Las direcciones omiten el número de aula y los enlaces de Meet solo se agregan
 // cuando la actividad es virtual y la planilla incluye una URL válida.
 const activityDetails = {
@@ -58,6 +58,32 @@ const activityDetails = {
   44: { direccion: 'Virtual', meetUrl: 'https://meet.google.com/gru-sjgv-pyw' },
   45: { direccion: 'Virtual', meetUrl: 'https://meet.google.com/ggq-twao-bqc?authuser=1&hs=122' },
   46: { direccion: 'Campo de Deportes UCALP, calle 64 y 147, Los Hornos' },
+  47: { direccion: '25 de Mayo 51' },
+  48: { direccion: '25 de Mayo 51' },
+  49: { direccion: '25 de Mayo 51' },
+  50: { direccion: '44 Nro. 720 entre 9 y 10' },
+  51: { direccion: '-' },
+  52: { direccion: '-' },
+}
+
+const officialDateRange = {
+  start: '2026-09-28',
+  end: '2026-10-02',
+}
+
+function normalizeOfficialDate(item) {
+  const isIsoDate = typeof item.fecha === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(item.fecha)
+  const isWithinOfficialRange = isIsoDate
+    && item.fecha >= officialDateRange.start
+    && item.fecha <= officialDateRange.end
+
+  if (item.fecha === '-' || isWithinOfficialRange) return item
+
+  return {
+    ...item,
+    fechaOriginal: item.fecha,
+    fecha: '-',
+  }
 }
 
 const scheduleRows = [
@@ -521,9 +547,69 @@ const scheduleRows = [
     hora: '17:15 hs',
     modalidad: 'PRESENCIAL',
   },
+  {
+    id: 47,
+    sede: 'Bernal',
+    facultad: 'Derecho y Ciencias Políticas',
+    carrera: 'Abogacía',
+    clase: 'Derecho Privado Parte General',
+    fecha: '2026-10-02',
+    hora: '19:30 hs',
+    modalidad: 'PRESENCIAL',
+  },
+  {
+    id: 48,
+    sede: 'Bernal',
+    facultad: 'Derecho y Ciencias Políticas',
+    carrera: 'Abogacía',
+    clase: 'Actuación ante los Tribunales Orales',
+    fecha: '2026-09-30',
+    hora: '15:00 hs',
+    modalidad: 'PRESENCIAL',
+  },
+  {
+    id: 49,
+    sede: 'Bernal',
+    facultad: 'Derecho y Ciencias Políticas',
+    carrera: 'Abogacía',
+    clase: 'Seminario de Ética',
+    fecha: '2026-09-28',
+    hora: '19:30 hs',
+    modalidad: 'PRESENCIAL',
+  },
+  {
+    id: 50,
+    sede: 'La Plata',
+    facultad: 'Ciencias de la Salud',
+    carrera: 'Lic. en Fonoaudiología',
+    clase: 'Práctica II',
+    fecha: '2026-10-02',
+    hora: '20:15 hs',
+    modalidad: 'PRESENCIAL',
+  },
+  {
+    id: 51,
+    sede: 'La Plata',
+    facultad: 'Odontología',
+    carrera: 'Odontología',
+    clase: 'Diagnóstico',
+    fecha: '2026-09-07',
+    hora: '08:30 a 11:30',
+    modalidad: 'PRESENCIAL',
+  },
+  {
+    id: 52,
+    sede: 'La Plata',
+    facultad: 'Odontología',
+    carrera: 'Odontología',
+    clase: 'Fisiología I',
+    fecha: '2026-09-09',
+    hora: '08:30 a 11:30',
+    modalidad: 'PRESENCIAL',
+  },
 ]
 
 export const openClassrooms = scheduleRows.map((item) => ({
-  ...item,
+  ...normalizeOfficialDate(item),
   ...(activityDetails[item.id] ?? { direccion: '-' }),
 }))

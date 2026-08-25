@@ -28,7 +28,6 @@ const experiences = [
   {
     id: 'aulas-abiertas',
     type: 'classrooms',
-    index: '01',
     title: 'Aulas Abiertas',
     start: '28',
     month: 'sept.',
@@ -41,7 +40,6 @@ const experiences = [
   {
     id: 'orientacion',
     type: 'orientation',
-    index: '02',
     title: 'Jornada de Orientación Vocacional',
     start: '08',
     month: 'sept.',
@@ -74,10 +72,7 @@ export default function Experiences() {
                 className={`group relative flex h-full min-h-[34rem] flex-col overflow-hidden rounded-[2.4rem] p-6 text-white shadow-card transition duration-500 hover:-translate-y-1.5 hover:shadow-floating sm:p-8 ${experience.background}`}
               >
                 <div className={`absolute -right-24 -top-24 h-80 w-80 rounded-full transition duration-700 group-hover:scale-110 ${experience.glow}`} />
-                <div className="relative flex items-center justify-between gap-3">
-                  <span className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-[0.62rem] font-bold uppercase tracking-[0.18em]">
-                    Experiencia {experience.index}
-                  </span>
+                <div className="relative flex items-center justify-end">
                   <span className="flex items-center gap-2 rounded-full bg-white/15 px-3 py-2 text-[0.62rem] font-bold uppercase tracking-wider">
                     <span className="h-2 w-2 rounded-full bg-brand-lime" /> Abierto y gratuito
                   </span>
