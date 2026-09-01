@@ -8,7 +8,7 @@ export const facultyColors = {
   'Ciencias de la Salud': '#B5195C',
 }
 
-// Fuente: assets/Charlas-v25-08.xlsx. Los campos ausentes se conservan como "-".
+// Fuente: assets/Charlas-v01-09.xlsx. Los campos ausentes se conservan como "-".
 // Las direcciones omiten el número de aula y los enlaces de Meet solo se agregan
 // cuando la actividad es virtual y la planilla incluye una URL válida.
 const activityDetails = {
@@ -25,7 +25,6 @@ const activityDetails = {
   11: { direccion: '-' },
   12: { direccion: '-' },
   13: { direccion: '-' },
-  14: { direccion: '-' },
   15: { direccion: '44 Nro. 720 entre 9 y 10' },
   16: { direccion: '44 Nro. 720 entre 9 y 10' },
   17: { direccion: 'Virtual', meetUrl: 'https://meet.google.com/vsz-nqqx-aug' },
@@ -64,6 +63,7 @@ const activityDetails = {
   50: { direccion: '44 Nro. 720 entre 9 y 10' },
   51: { direccion: '-' },
   52: { direccion: '-' },
+  53: { direccion: '-' },
 }
 
 const officialDateRange = {
@@ -83,6 +83,23 @@ function normalizeOfficialDate(item) {
     ...item,
     fechaOriginal: item.fecha,
     fecha: '-',
+  }
+}
+
+function normalizeActivity(item) {
+  const details = activityDetails[item.id] ?? { direccion: '-' }
+  const isVirtual = details.direccion === 'Virtual'
+  const modalidad = isVirtual
+    ? 'VIRTUAL'
+    : details.direccion === '-'
+      ? '-'
+      : 'PRESENCIAL'
+
+  return {
+    ...normalizeOfficialDate(item),
+    ...details,
+    modalidad,
+    ...(isVirtual ? { meetUrl: details.meetUrl ?? '-' } : {}),
   }
 }
 
@@ -215,16 +232,6 @@ const scheduleRows = [
     clase: 'Psicopatología y Lenguaje',
     fecha: '2026-10-02',
     hora: '14:00 hs',
-    modalidad: 'PRESENCIAL',
-  },
-  {
-    id: 14,
-    sede: 'Bahía Blanca',
-    facultad: 'Ciencias de la Salud',
-    carrera: 'Lic. en Terapia Ocupacional',
-    clase: '-',
-    fecha: '-',
-    hora: '-',
     modalidad: 'PRESENCIAL',
   },
   {
@@ -593,9 +600,9 @@ const scheduleRows = [
     facultad: 'Odontología',
     carrera: 'Odontología',
     clase: 'Diagnóstico',
-    fecha: '2026-09-07',
+    fecha: '2026-09-28',
     hora: '08:30 a 11:30',
-    modalidad: 'PRESENCIAL',
+    modalidad: '-',
   },
   {
     id: 52,
@@ -603,13 +610,20 @@ const scheduleRows = [
     facultad: 'Odontología',
     carrera: 'Odontología',
     clase: 'Fisiología I',
-    fecha: '2026-09-09',
+    fecha: '2026-09-30',
     hora: '08:30 a 11:30',
-    modalidad: 'PRESENCIAL',
+    modalidad: '-',
+  },
+  {
+    id: 53,
+    sede: 'La Plata',
+    facultad: 'Derecho y Ciencias Políticas',
+    carrera: 'Abogacía',
+    clase: 'Economía Política',
+    fecha: '2026-10-01',
+    hora: '13:00 hs',
+    modalidad: '-',
   },
 ]
 
-export const openClassrooms = scheduleRows.map((item) => ({
-  ...normalizeOfficialDate(item),
-  ...(activityDetails[item.id] ?? { direccion: '-' }),
-}))
+export const openClassrooms = scheduleRows.map(normalizeActivity)
