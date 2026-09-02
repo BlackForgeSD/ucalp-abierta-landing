@@ -7,7 +7,7 @@ const navItems = [
   { href: '#experiencias', label: 'Experiencias' },
   { href: '#aulas-abiertas', label: 'Aulas Abiertas' },
   { href: '#orientacion', label: 'Orientación' },
-  { href: '#contacto', label: 'Participar' },
+  { href: '#contacto', label: 'Consultar' },
 ]
 
 export default function Navbar() {
@@ -73,7 +73,7 @@ export default function Navbar() {
                 href="#contacto"
                 className="hidden whitespace-nowrap rounded-full bg-brand-green px-5 py-3 text-xs font-bold text-white transition hover:bg-[#54a225] sm:inline-flex lg:text-sm"
               >
-                Quiero participar
+                Consultar
               </a>
               <button
                 type="button"

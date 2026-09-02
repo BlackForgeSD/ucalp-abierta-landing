@@ -1,6 +1,7 @@
 import ButtonLink from '../components/ButtonLink'
 import Reveal from '../components/Reveal'
 import ovHorizontal from '../../assets/oV-sinFondo-10.png'
+import { ORIENTACION_VOCACIONAL_REGISTRATION_URL } from '../constants/registrationForms'
 
 const details = [
   { label: 'Fecha', value: '8 de septiembre' },
@@ -98,7 +99,14 @@ export default function VocationalDay() {
           </div>
 
           <div className="mt-7 flex flex-col gap-4 sm:flex-row sm:items-center">
-            <ButtonLink href="#contacto" variant="light">Quiero participar</ButtonLink>
+            <ButtonLink
+              href={ORIENTACION_VOCACIONAL_REGISTRATION_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="light"
+            >
+              Formulario de inscripción
+            </ButtonLink>
             <span className="flex items-center gap-2 text-xs font-bold text-white/65">
               <span className="h-2 w-2 rounded-full bg-brand-lime" /> Abierto y gratuito
             </span>

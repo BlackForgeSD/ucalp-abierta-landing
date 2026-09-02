@@ -2,6 +2,7 @@ import ArrowIcon from '../components/ArrowIcon'
 import Reveal from '../components/Reveal'
 import SectionHeading from '../components/SectionHeading'
 import ovHorizontal from '../../assets/oV-sinFondo-10.png'
+import { AULAS_ABIERTAS_REGISTRATION_URL, ORIENTACION_VOCACIONAL_REGISTRATION_URL } from '../constants/registrationForms'
 
 function EventSymbol({ type }) {
   if (type === 'classrooms') {
@@ -36,6 +37,7 @@ const experiences = [
     background: 'bg-brand-green',
     glow: 'bg-brand-lime/45',
     dateColor: 'text-brand-green',
+    registrationUrl: AULAS_ABIERTAS_REGISTRATION_URL,
   },
   {
     id: 'orientacion',
@@ -48,6 +50,7 @@ const experiences = [
     background: 'bg-brand-blue',
     glow: 'bg-brand-sky/40',
     dateColor: 'text-brand-sky',
+    registrationUrl: ORIENTACION_VOCACIONAL_REGISTRATION_URL,
   },
 ]
 
@@ -68,7 +71,10 @@ export default function Experiences() {
           {experiences.map((experience, index) => (
             <Reveal key={experience.id} delay={index * 100} className="h-full">
               <a
-                href={`#${experience.id}`}
+                href={experience.registrationUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Abrir formulario de inscripción de ${experience.title} en una pestaña nueva`}
                 className={`group relative flex h-full min-h-[34rem] flex-col overflow-hidden rounded-[2.4rem] p-6 text-white shadow-card transition duration-500 hover:-translate-y-1.5 hover:shadow-floating sm:p-8 ${experience.background}`}
               >
                 <div className={`absolute -right-24 -top-24 h-80 w-80 rounded-full transition duration-700 group-hover:scale-110 ${experience.glow}`} />
@@ -102,7 +108,7 @@ export default function Experiences() {
                   <h3 className="max-w-[31rem] text-[2.55rem] font-bold leading-[0.94] tracking-[-0.05em] sm:text-[3.45rem]">{experience.title}</h3>
                   <p className="mt-5 max-w-md text-sm leading-6 text-white/75 sm:text-base">{experience.copy}</p>
                   <span className="mt-6 inline-flex items-center gap-2 text-sm font-bold">
-                    Ver más <ArrowIcon className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                    Formulario de inscripción <ArrowIcon className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                   </span>
                 </div>
               </a>

@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import ButtonLink from '../components/ButtonLink'
 import Reveal from '../components/Reveal'
 import SectionHeading from '../components/SectionHeading'
+import { AULAS_ABIERTAS_REGISTRATION_URL } from '../constants/registrationForms'
 import { facultyColors, openClassrooms } from '../data/aulasAbiertas'
-import { getWhatsAppHrefForMessage, isWhatsAppConfigured } from '../utils/whatsapp'
 
 const confirmedScheduleDays = [
   { id: '2026-09-28', day: '28', month: 'SEP', label: '28 de septiembre' },
@@ -28,10 +28,6 @@ function getActivityInfo(item) {
   const meetLine = item.meetUrl && item.meetUrl !== '-' ? `\nGoogle Meet: ${item.meetUrl}` : ''
 
   return `Aulas Abiertas UCALP\n\nCarrera: ${item.carrera}\nClase: ${item.clase}\nFecha: ${getActivityDate(item)}\nHora: ${item.hora}\nSede: ${item.sede}\nDirección: ${item.direccion}\nModalidad: ${item.modalidad}${meetLine}`
-}
-
-function getActivityWhatsAppMessage(item) {
-  return `Hola, quiero recibir información sobre Aulas Abiertas UCALP.\n\nMe interesa esta actividad:\n\nCarrera: ${item.carrera}\nClase: ${item.clase}\nFecha: ${getActivityDate(item)}\nHora: ${item.hora}\nSede: ${item.sede}\n\nGracias.`
 }
 
 function normalizeSearch(value) {
@@ -191,6 +187,16 @@ function ScheduleCard() {
                 </div>
 
                 <div className="mt-3 flex flex-wrap gap-2 border-t border-white/10 pt-3 text-[0.67rem] font-bold">
+                  <a
+                    href={AULAS_ABIERTAS_REGISTRATION_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Abrir formulario de inscripción para ${item.clase} en una pestaña nueva`}
+                    className="whitespace-nowrap rounded-full border border-brand-lime/35 bg-brand-lime/10 px-3 py-2 text-brand-lime transition hover:border-brand-lime/55 hover:bg-brand-lime/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-lime"
+                  >
+                    Formulario de inscripción
+                  </a>
+
                   <button
                     type="button"
                     onClick={() => handleCopy(item)}
@@ -207,10 +213,8 @@ function ScheduleCard() {
                   </button>
 
                   <a
-                    href={getWhatsAppHrefForMessage(getActivityWhatsAppMessage(item))}
-                    target={isWhatsAppConfigured ? '_blank' : undefined}
-                    rel={isWhatsAppConfigured ? 'noopener noreferrer' : undefined}
-                    aria-label={`Consultar por WhatsApp sobre ${item.clase}`}
+                    href="#contacto"
+                    aria-label={`Consultar sobre ${item.clase} mediante el formulario general`}
                     className="rounded-full border border-brand-sky/30 bg-brand-sky/10 px-3 py-2 text-brand-sky transition hover:border-brand-sky/50 hover:bg-brand-sky/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-lime"
                   >
                     Consultar
@@ -279,7 +283,14 @@ export default function OpenClassrooms() {
           </ul>
 
           <div className="mt-8">
-            <ButtonLink href="#contacto" variant="blue">Quiero participar</ButtonLink>
+            <ButtonLink
+              href={AULAS_ABIERTAS_REGISTRATION_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="blue"
+            >
+              Formulario de inscripción
+            </ButtonLink>
           </div>
         </Reveal>
 

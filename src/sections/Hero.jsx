@@ -3,11 +3,15 @@ import Reveal from '../components/Reveal'
 import ovHorizontal from '../../assets/oV-sinFondo-10.png'
 import { getWhatsAppHref, isWhatsAppConfigured } from '../utils/whatsapp'
 
-function EventTicket({ type, date, endDate, title, note, className = '' }) {
+function EventTicket({ type, date, endDate, title, note, href, className = '' }) {
   const isOrientation = type === 'orientation'
 
   return (
-    <div className={`overflow-hidden rounded-[1.75rem] border border-white/25 bg-white text-brand-deep shadow-floating ${className}`}>
+    <a
+      href={href}
+      aria-label={`Ir a la sección ${title}`}
+      className={`cursor-pointer overflow-hidden rounded-[1.75rem] border border-white/25 bg-white text-brand-deep shadow-floating focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-lime ${className}`}
+    >
       <div className="grid grid-cols-[5.6rem_1fr]">
         <div className={`grid min-h-[8.6rem] place-items-center p-3 text-center text-white ${isOrientation ? 'bg-brand-sky' : 'bg-brand-green'}`}>
           <span className="leading-none">
@@ -32,13 +36,13 @@ function EventTicket({ type, date, endDate, title, note, className = '' }) {
           </div>
         </div>
       </div>
-    </div>
+    </a>
   )
 }
 
-function MobileEvent({ date, title, color }) {
+function MobileEvent({ date, title, color, href }) {
   return (
-    <a href={title === 'Aulas Abiertas' ? '#aulas-abiertas' : '#orientacion'} className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-sm">
+    <a href={href} className="cursor-pointer rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-lime">
       <span className={`text-[0.62rem] font-extrabold uppercase tracking-[0.16em] ${color}`}>{date}</span>
       <span className="mt-2 block text-sm font-bold leading-tight text-white">{title}</span>
       <span className="mt-3 flex items-center gap-2 text-[0.58rem] font-bold uppercase tracking-wider text-white/60">
@@ -85,7 +89,7 @@ export default function Hero() {
           </Reveal>
 
           <Reveal delay={220} className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <ButtonLink href="#contacto" variant="primary" className="sm:min-w-48">Quiero participar</ButtonLink>
+            <ButtonLink href="#contacto" variant="primary" className="sm:min-w-48">Consultar</ButtonLink>
             <ButtonLink
               href={getWhatsAppHref()}
               variant="light"
@@ -105,8 +109,8 @@ export default function Hero() {
           </Reveal>
 
           <Reveal delay={260} className="mt-7 grid grid-cols-2 gap-3 lg:hidden">
-            <MobileEvent date="8 de sept." title="Orientación Vocacional" color="text-brand-sky" />
-            <MobileEvent date="28 sept. — 2 oct." title="Aulas Abiertas" color="text-brand-lime" />
+            <MobileEvent href="#orientacion" date="8 de sept." title="Orientación Vocacional" color="text-brand-sky" />
+            <MobileEvent href="#aulas-abiertas" date="28 sept. — 2 oct." title="Aulas Abiertas" color="text-brand-lime" />
           </Reveal>
         </div>
 
@@ -124,6 +128,7 @@ export default function Hero() {
 
           <EventTicket
             type="orientation"
+            href="#orientacion"
             date="08"
             title="Jornada de Orientación Vocacional"
             note="Primero, explorá"
@@ -131,6 +136,7 @@ export default function Hero() {
           />
           <EventTicket
             type="classrooms"
+            href="#aulas-abiertas"
             date="28"
             endDate="2 oct."
             title="Aulas Abiertas"
